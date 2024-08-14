@@ -64,3 +64,65 @@ cadenaDeCasas([Mago1, Mago2|MagoSiguiente]):-
 cadenaDeCasas([_]).
 cadenaDeCasas([]).
 
+%Parte 2:
+
+hizo(harry, fueraDeCama).
+hizo(hermione, fueA(tercerPiso)).
+hizo(hermione, fueA(seccionRestringidaBiblioteca)).
+hizo(harry, fueA(bosque)).
+hizo(harry, fueA(tercerPiso)).
+hizo(draco, fueA(mazmorras)).
+hizo(ron, buenaAccion(50,ganarPartidaAjedrezMagico)).
+hizo(hermione, buenaAccion(50,usoIntelectoParaSalvarAmigos)).
+hizo(harry, buenaAccion(60,ganarAVoldemort)).
+
+
+hizoAlgunaAccion(Mago):-
+    hizo(Mago,_).
+hizoAlgoMalo(Mago):-
+    hizo(Mago,Accion),
+    puntajeGenerado(Accion,Puntaje),
+    Puntaje < 0.
+
+lugarProhibido(bosque,50).
+lugarProhibido(seccionRestringidaBiblioteca,10).
+lugarProhibido(tercerPiso,75).
+
+puntajeGenerado(fueraDeCama,-50).
+puntajeGenerado(fueA(Lugar),PuntajeRestado):-
+    lugarProhibido(Lugar,Puntos),
+    PuntajeRestado is Puntos * -1.
+puntajeGenerado(buenaAccion(Puntaje,_),Puntaje).
+
+
+esBuenAlumno(Mago):-
+    hizoAlgunaAccion(Mago),
+    not(hizoAlgoMalo(Mago)).
+
+accionRecurrente(Accion):-
+    hizo(Mago,Accion),
+    hizo(OtroMago,Accion),
+    Mago \= OtroMago.
+
+esDe(hermione,gryffindor).
+esDe(ron,gryffindor).
+esDe(harry,gryffindor).
+esDe(draco,slytherin).
+esDe(luna,ravenclaw).
+
+
+
+puntajeTotalDeLaCasa(Casa,PuntajeTotal):-
+    esDe(_,Casa),
+    findall(Puntos,(esDe(Mago,Casa), puntosMago(Mago,_,Puntos)), ListaPuntos),
+    sum_list(ListaPuntos, PuntajeTotal).
+/*
+puntajeTotalDeLaCasaV2(Casa,PuntajeTotal):-
+    esDe(_,Casa),
+    findall(Puntos,(esDe(Mago,Casa), hizo(Mago,Accion),puntajeGenerado(Accion,Puntos)), ListaPuntos),
+    sum_list(ListaPuntos, PuntajeTotal).
+*/
+puntosMago(Mago,Accion,Puntos):-
+    hizo(Mago,Accion),
+    puntajeGenerado(Accion,Puntos).
+    
